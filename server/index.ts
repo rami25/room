@@ -1,5 +1,5 @@
 import express, { RequestHandler } from 'express'
-import { createPostHandler, listPostsHandler } from './handlers/postHandler'
+import { createPostHandler, deletePostHandler, listPostsHandler } from './handlers/postHandler'
 const app = express()
 
 app.use(express.json())
@@ -17,6 +17,7 @@ app.get('/posts' , listPostsHandler)
 
 app.post('/posts' , createPostHandler)
 
+app.delete('/posts', deletePostHandler)
 app.delete('/posts/:ref', (req,res) => {
 })
 

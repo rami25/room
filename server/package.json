@@ -9,6 +9,7 @@
   "author": "rami25",
   "license": "ISC",
   "dependencies": {
+    "crypto": "^1.0.1",
     "express": "^4.18.2",
     "typescript": "^4.9.5"
   },

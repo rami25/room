@@ -1,12 +1,40 @@
-import { RequestHandler } from "express"
 import { db } from "../dataStore"
+import { ExpressHandler, Post } from "../types"
+import crypto from 'crypto'
 
-export const listPostsHandler : RequestHandler = (req, res) => {
+
+
+export const listPostsHandler : ExpressHandler<{}, {}> = (req, res) => {
     res.send({ posts : db.listPosts() })
 }
 
-export const createPostHandler : RequestHandler = (req, res) =>{
-    const post = req.body
+type CreatePostRequest = Pick<Post, "title" | "url" | "userId">
+interface CreatePostResponse {}
+
+export const createPostHandler : ExpressHandler<CreatePostRequest, CreatePostResponse> = (req, res) =>{
+    if(!req.body.title ||!req.body.url ||!req.body.userId){ 
+        return res.sendStatus(400)
+    }
+
+    const post: Post = {
+        id: crypto.randomUUID(),
+        postedAt: Date.now(),
+        title: req.body.title,
+        url: req.body.url,
+        userId: req.body.userId
+    }
+
     db.createPost(post)
     res.sendStatus(200)
+}
+
+interface DeletePostRequest {
+    id: string
+}
+interface DeletePostResponse {}
+
+export const deletePostHandler : ExpressHandler<DeletePostRequest, DeletePostResponse> = (req, res) => {
+    if(!req.body.id) return res.sendStatus(400)
+    db.deletePost(req.body.id)
+    res.send( {message : "deleted"} )
 }
