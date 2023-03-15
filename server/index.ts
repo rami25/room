@@ -1,5 +1,6 @@
-import express, { RequestHandler } from 'express'
+import express, { ErrorRequestHandler, RequestHandler } from 'express'
 import { createPostHandler, deletePostHandler, listPostsHandler } from './handlers/postHandler'
+import asyncHandler from 'express-async-handler'
 const app = express()
 
 app.use(express.json())
@@ -13,12 +14,13 @@ const requestMiddleWare : RequestHandler = (req, res, next) => {
 
 app.use(requestMiddleWare)
 
-app.get('/posts' , listPostsHandler)
+app.get('/posts' , asyncHandler(listPostsHandler))
+app.post('/posts' , asyncHandler( createPostHandler))
+app.delete('/posts' , asyncHandler( deletePostHandler))
 
-app.post('/posts' , createPostHandler)
-
-app.delete('/posts', deletePostHandler)
-app.delete('/posts/:ref', (req,res) => {
-})
-
+const errHandler : ErrorRequestHandler = (err, req, res, next) => {
+    console.error('Uncaught exception', err)
+    return res.status(500).send('Oops, an expected error occured')
+}
+app.use(errHandler)
 app.listen(3000 , () => {console.log("server started")})
